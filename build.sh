@@ -2,7 +2,7 @@
 
 rm -rf public
 mkdir -p public
-cp -r index.html fullcust common zsaver public
+cp -r CNAME index.html fullcust common zsaver public
 
 chiplibrary_output_dir="$(pwd)/public/chiplibrary"
 pushd chiplibrary || exit 1
