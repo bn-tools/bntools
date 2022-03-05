@@ -1,0 +1,321 @@
+SuprArmr/スーパーアーマー red solid
+.....
+..#..
+.###.
+.XXX.
+.....
+
+Custom1/カスタム1 blue solid
+.....
+..#..
+.X#X.
+..##.
+.....
+
+Custom2/カスタム2 white solid
+..XX.
+..##.
+..##.
+..##.
+..#X.
+
+MegFldr1/メガフォルダ1 green solid
+.....
+...X.
+.###.
+...X.
+.....
+
+MegFldr2/メガフォルダ2 white solid
+.....
+..X#.
+.####
+..#X.
+.....
+
+GigFldr1/ギガフォルダ1 red solid
+.....
+..#..
+.###.
+X###X
+.....
+
+FstBarr/ファーストバリア blue solid
+.....
+.X#X.
+.X##.
+.....
+.....
+
+Shield/シールド blue solid
+.....
+..##X
+..#..
+..X..
+.....
+
+Reflect/リフレクト green solid
+.....
+..X..
+#####
+..X..
+.....
+
+AntiDmg/カワリミマジック green solid
+.....
+..X#.
+..##.
+.##..
+.#...
+
+FlotShoe/フロートシューズ pink solid
+.....
+...#.
+.X##.
+..#X.
+.....
+
+AirShoes/エアシューズ white solid
+.....
+.....
+.###.
+.#X#.
+.#.#.
+
+UnderSht/アンダーシャツ white solid
+.....
+..X..
+..#..
+.....
+.....
+
+ChpShufl/サーチシャッフル green solid
+...#X
+##.##
+#####
+##.#X
+X#...
+
+NumbrOpn/ナンバーオープン pink solid
+#####
+#####
+#####
+#####
+##X##
+
+SneakRun/シノビダッシュ white solid
+.....
+..#..
+.###.
+..X..
+.....
+
+OilBody/オイルボディ red solid
+.....
+..#..
+..#..
+.##X.
+.....
+
+Fish/アイムフィッシュ blue solid
+.....
+..#..
+..#..
+.##X.
+.....
+
+Battery/バッテリーモード yellow solid
+.....
+..#..
+..#..
+.##X.
+.....
+
+Jungle/ジャングルランド green solid
+.....
+..#..
+..#..
+.##X.
+.....
+
+Collect/コレクターズアイ pink solid
+.....
+.###.
+.X##.
+..X#.
+.....
+
+Millions/ミリオネア red solid
+.....
+..##.
+...#.
+..XX.
+.....
+
+Humor/ユーモアセンス pink solid
+.....
+..#..
+..##.
+..X#.
+.....
+
+Poem/リズミカルポエム yellow solid
+.....
+..#..
+.##..
+.#X..
+.....
+
+SlipRunr/スリップランナー yellow solid
+.....
+..#..
+..#..
+..X..
+.....
+
+AutoHeal/セルフリカバリー pink solid
+..X..
+..#..
+..#..
+###..
+.....
+
+BustPack/バスターパック red solid
+.....
+.##X.
+.###.
+.###.
+.....
+
+BodyPack/ボディパック pink solid
+..#..
+#####
+.###.
+.###.
+X###X
+
+FldrPck1/フォルダパック1 yellow solid
+.....
+..##.
+.###.
+.X#..
+.....
+
+FldrPck2/フォルダパック2 pink solid
+..#..
+.###.
+.###X
+####.
+...#.
+
+BugStop/バグストッパー yellow solid
+..#X.
+.##..
+..##.
+.X#..
+.....
+
+Rush/ラッシュサポート yellow solid
+.....
+.X#..
+..#..
+.....
+.....
+
+Beat/ビートサポート blue solid
+.....
+...#.
+..##.
+..#..
+..X..
+
+Tango/タンゴサポート green solid
+.###.
+..#..
+..#..
+.##X.
+.....
+
+Attack+1/アタック+1 pink,red,blue plus
+.....
+..#..
+..#..
+.....
+.....
+
+Speed+1/ラピッド+1 white,pink,green plus
+.....
+.....
+..#..
+.....
+.....
+
+Charge+1/チャージ+1 white,blue,pink plus
+.....
+.....
+..#..
+.....
+.....
+
+AttckMAX/アタックMAX red plus
+.##..
+.##..
+.##..
+.X#..
+.....
+
+SpeedMAX/ラピッドMAX green plus
+.....
+.....
+.X##.
+.....
+.....
+
+ChargMAX/チャージMAX blue plus
+.....
+..#..
+.X##.
+.....
+.....
+
+HP+50/HP+50 white,pink,blue plus
+.....
+..#..
+..#..
+.....
+.....
+
+HP+100/HP+100 white,pink,blue plus
+.....
+..##.
+..##.
+.....
+.....
+
+HP+200/HP+200 white,yellow,blue plus
+.....
+.###.
+.###.
+.....
+.....
+
+HP+300/HP+300 white,pink,green plus
+.....
+.####
+.###.
+.....
+.....
+
+HP+400/HP+400 white,yellow,green plus
+.....
+.####
+.####
+.....
+.....
+
+HP+500/HP+500 white,pink,green plus
+.....
+#####
+#####
+.....
+.....

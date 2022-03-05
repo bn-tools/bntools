@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>bntools/fullcust</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+            crossorigin="anonymous"
+        />
+
+        <script src="/data/5/navicust.js"></script>
+        <script src="/data/6/navicust.js"></script>
+        <script src="/common/array2d.js"></script>
+        <script src="/common/navicust.js"></script>
+    </head>
+    <body>
+        <script src="/common/langselect.js"></script>
+        <div class="container my-3">
+            <h1><a href="..">bntools</a>/fullcust</h1>
+            <p class="lead">
+                <span data-localize lang="en">navicust autolayout</span>
+                <span data-localize lang="ja"
+                    >ナビカスタマイザーパーツ自動配置</span
+                >
+            </p>
+            <ul id="nav" class="nav nav-pills mb-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="?game=5" data-game-id="5">
+                        <span data-localize lang="en">bn5</span>
+                        <span data-localize lang="ja">EXE5</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?game=6" data-game-id="6">
+                        <span data-localize lang="en">bn6</span>
+                        <span data-localize lang="ja">EXE6</span>
+                    </a>
+                </li>
+            </ul>
+            <p>
+                <span data-localize lang="en">
+                    <strong>note:</strong> this is not intended to replace
+                    experience and knowledge in making a navicust, so please use
+                    at your own discretion!
+                </span>
+                <span data-localize lang="ja">
+                    <strong>注意：</strong
+                    >このツールはナビカスタマイザーパーツの配置のご自身の経験を代用するものではありません。ご自身の判断でご利用ください。
+                </span>
+            </p>
+            <form id="form" class="mb-3">
+                <fieldset id="fieldset">
+                    <table class="table table-striped table-bordered">
+                        <tbody id="selected"></tbody>
+                    </table>
+                    <div class="form">
+                        <div class="col mb-3">
+                            <select
+                                data-localize
+                                lang="en"
+                                name="blocksEn"
+                                class="form-select"
+                            >
+                                <option value="-1">pick a block...</option>
+                            </select>
+                            <select
+                                data-localize
+                                lang="ja"
+                                name="blocksJa"
+                                class="form-select"
+                            >
+                                <option value="-1">パーツを選ぶ</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="row" id="go">
+                    <div class="col-auto">
+                        <button type="reset" class="btn btn-danger">
+                            <span data-localize lang="en">start over</span>
+                            <span data-localize lang="ja">リセット</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <p>
+                <span data-localize lang="en">
+                    found a bug (not the navicust kind har har)?
+                    <a
+                        href="https://gitlab.com/bntools/fullcust/issues"
+                        target="_blank"
+                        >let me know!</a
+                    >
+                </span>
+                <span data-localize lang="ja">
+                    バグを発見された場合は、<a
+                        href="https://gitlab.com/bntools/fullcust/issues"
+                        target="_blank"
+                        >こちらにご報告ください</a
+                    >。
+                </span>
+            </p>
+            <hr />
+            <div class="mb-3">
+                <div class="d-grid">
+                    <button
+                        id="load-more"
+                        type="button"
+                        class="btn btn-secondary py-2"
+                    >
+                        <span
+                            class="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                            id="load-more-spinner"
+                        ></span>
+                        <span id="load-more-text"></span>
+                    </button>
+                </div>
+                <div id="no-more" class="text-center py-2 border"></div>
+            </div>
+            <div id="results"></div>
+        </div>
+        <script>
+            const GAMES = {
+                6: {
+                    blocks: DATA_6_navicust,
+                    solverOptions: {
+                        nrows: 7,
+                        ncols: 7,
+                        commandLine: 3,
+                        safeAreaTop: 1,
+                        safeAreaLeft: 1,
+                        safeAreaNrows: 5,
+                        safeAreaNcols: 5,
+                        deadCorners: true,
+                    },
+                },
+
+                5: {
+                    blocks: DATA_5_navicust,
+                    solverOptions: {
+                        nrows: 5,
+                        ncols: 5,
+                        commandLine: 2,
+                        safeAreaTop: 0,
+                        safeAreaLeft: 0,
+                        safeAreaNrows: 5,
+                        safeAreaNcols: 5,
+                        deadCorners: false,
+                    },
+                },
+            };
+
+            let gameVersion = new URLSearchParams(window.location.search).get(
+                "game"
+            );
+            if (!Object.prototype.hasOwnProperty.call(GAMES, gameVersion)) {
+                gameVersion = "6";
+            }
+
+            for (const link of document
+                .getElementById("nav")
+                .getElementsByClassName("nav-link")) {
+                if (link.dataset.gameId == gameVersion) {
+                    link.classList.add("active");
+                }
+            }
+
+            const { blocks: BLOCKS, solverOptions } = GAMES[gameVersion];
+
+            const now = +new Date();
+
+            const makeBlockSetting = (function () {
+                let i = 0;
+
+                return function (texts, checked, disabled, onChange) {
+                    const selects = [];
+
+                    function makeSelect(lang, text, prefixes) {
+                        const select = document.createElement("select");
+                        select.className = "form-select form-select-sm";
+                        setting.appendChild(select);
+
+                        let i = 0;
+                        for (const o of [
+                            { text: "❔ ", v: -1 },
+                            { text: "✅ ", v: 1 },
+                            { text: "❌ ", v: 0 },
+                        ]) {
+                            const option = document.createElement("option");
+                            option.text = o.text + prefixes[i] + text;
+                            option.value = o.v;
+                            select.appendChild(option);
+                            ++i;
+                        }
+
+                        select.lang = lang;
+                        select.dataset.localize = true;
+                        select.value = checked === null ? -1 : checked ? 1 : 0;
+                        select.disabled = disabled;
+                        select.onchange = function () {
+                            onChange(
+                                select.value == "-1"
+                                    ? null
+                                    : select.value == "1"
+                            );
+                            for (const s of selects) {
+                                s.value = select.value;
+                            }
+                        };
+
+                        selects.push(select);
+                        return select;
+                    }
+
+                    const setting = document.createElement("div");
+                    setting.className = "col-auto";
+
+                    setting.appendChild(
+                        makeSelect("en", texts.en, [
+                            "MAY ",
+                            "MUST ",
+                            "MUSTN'T ",
+                        ])
+                    );
+                    setting.appendChild(
+                        makeSelect("ja", texts.ja, [
+                            "任意：",
+                            "必要：",
+                            "不要：",
+                        ])
+                    );
+
+                    return setting;
+                };
+            })();
+
+            function makeLangSpans(catalog) {
+                const fragment = document.createDocumentFragment();
+                for (const code in catalog) {
+                    const span = document.createElement("span");
+                    fragment.appendChild(span);
+                    span.dataset.localize = true;
+                    span.lang = code;
+                    span.textContent = catalog[code];
+                }
+                return fragment;
+            }
+
+            const form = document.getElementById("form");
+            const fieldset = document.getElementById("fieldset");
+
+            const selectedTable = document.getElementById("selected");
+            const results = document.getElementById("results");
+
+            function makeCleanState() {
+                return {
+                    selected: [],
+                };
+            }
+            let state = makeCleanState();
+
+            function makeCleanWorkerState() {
+                return {
+                    worker: null,
+                    done: true,
+                    waiting: false,
+                    remaining: 0,
+                    found: null,
+                };
+            }
+            let workerState = makeCleanWorkerState();
+
+            function stop() {
+                if (workerState.worker != null) {
+                    workerState.worker.terminate();
+                    workerState.worker = null;
+                }
+            }
+
+            const loadMoreButton = document.getElementById("load-more");
+            loadMoreButton.onclick = () => {
+                workerState.remaining = 10;
+                workerState.worker.postMessage({ type: "next" });
+            };
+
+            const noMore = document.getElementById("no-more");
+            const loadMoreText = document.getElementById("load-more-text");
+
+            function renderWorkerState() {
+                if (workerState.done || workerState.worker == null) {
+                    if (workerState.found !== null) {
+                        noMore.style.display = null;
+                        noMore.classList.remove("text-danger");
+                        noMore.classList.remove("text-success");
+                        noMore.classList.remove("text-warning");
+                        noMore.textContent = "";
+                        if (!workerState.done) {
+                            noMore.classList.add("text-warning");
+                            noMore.appendChild(
+                                makeLangSpans({
+                                    en: "search aborted",
+                                    ja: "検索は中断された",
+                                })
+                            );
+                        } else if (workerState.found == 0) {
+                            noMore.classList.add("text-danger");
+                            noMore.appendChild(
+                                makeLangSpans({
+                                    en: "not possible",
+                                    ja: "不可能！",
+                                })
+                            );
+                        } else {
+                            noMore.classList.add("text-success");
+                            noMore.appendChild(
+                                makeLangSpans({
+                                    en:
+                                        "that's it! (found " +
+                                        workerState.found +
+                                        " ways)",
+                                    ja:
+                                        "以上です！（" +
+                                        workerState.found +
+                                        "つの方法を見つかりました）",
+                                })
+                            );
+                        }
+                        loadMoreText.textContent = "";
+                        loadMoreButton.style.display = "none";
+                    } else {
+                        noMore.style.display = "none";
+                        loadMoreText.textContent = "";
+                        loadMoreButton.style.display = "none";
+                    }
+                } else {
+                    noMore.style.display = "none";
+                    noMore.textContent = "";
+
+                    loadMoreButton.style.display = null;
+
+                    if (workerState.waiting) {
+                        document.getElementById(
+                            "load-more-spinner"
+                        ).style.display = null;
+                        loadMoreButton.disabled = true;
+                        loadMoreText.textContent = "";
+                        loadMoreText.appendChild(
+                            makeLangSpans({
+                                en:
+                                    "thinking... (found " +
+                                    workerState.found +
+                                    " ways so far)",
+                                ja:
+                                    "検索中（現在" +
+                                    workerState.found +
+                                    "つの方法を見つかりました）",
+                            })
+                        );
+                    } else {
+                        document.getElementById(
+                            "load-more-spinner"
+                        ).style.display = "none";
+                        loadMoreButton.disabled = false;
+                        loadMoreText.textContent = "";
+                        loadMoreText.appendChild(
+                            makeLangSpans({
+                                en:
+                                    "keep thinking (found " +
+                                    workerState.found +
+                                    " ways so far)",
+                                ja:
+                                    "検索を続けて行う（現在" +
+                                    workerState.found +
+                                    "つの方法を見つかりました）",
+                            })
+                        );
+                    }
+                }
+            }
+            renderWorkerState();
+
+            function start() {
+                stop();
+
+                if (state.selected.length > 0) {
+                    workerState = {
+                        worker: new Worker("worker.js?" + now),
+                        done: false,
+                        waiting: true,
+                        remaining: 5,
+                        found: 0,
+                    };
+                } else {
+                    workerState = makeCleanWorkerState();
+                }
+                renderWorkerState();
+
+                clearResults();
+
+                if (state.selected.length == 0) {
+                    return;
+                }
+
+                const selected = state.selected.slice();
+                selected.sort((l, r) => {
+                    return l.id - r.id;
+                });
+                const reqs = selected.map((req) => {
+                    const block = BLOCKS[req.id];
+                    return {
+                        ...req,
+                        color: block.colors[req.variant],
+                        isSolid: block.isSolid,
+                        nrows: 5,
+                        ncols: 5,
+                        squares: block.squares,
+                    };
+                });
+                workerState.worker.postMessage({
+                    type: "init",
+                    reqs,
+                    options: solverOptions,
+                });
+                console.log("Requirements to solver", reqs);
+
+                workerState.worker.postMessage({ type: "next" });
+
+                workerState.worker.onmessage = (e) => {
+                    workerState.waiting = false;
+                    if (e.data == null) {
+                        workerState.done = true;
+                        stop();
+                    } else {
+                        const { cust, reqStatus } = e.data;
+                        results.insertBefore(
+                            render(reqs, cust, reqStatus),
+                            results.firstChild
+                        );
+                        --workerState.remaining;
+                        ++workerState.found;
+                        if (workerState.remaining > 0) {
+                            workerState.waiting = true;
+                            workerState.worker.postMessage({ type: "next" });
+                        }
+                    }
+                    renderWorkerState();
+                };
+                workerState.worker.onerror = (e) => {
+                    console.error(e);
+                    stop();
+                    renderWorkerState();
+                };
+            }
+
+            form.onreset = function (e) {
+                e.preventDefault();
+                state = makeCleanState();
+                rerenderSelections();
+                clearResults();
+                workerState = makeCleanWorkerState();
+                renderWorkerState();
+            };
+
+            function stateToString(state) {
+                return JSON.stringify({
+                    s: state.selected.map((e) => {
+                        const v = {
+                            i: e.id,
+                            j: e.variant,
+                        };
+                        if (e.compressed) {
+                            v.z = e.compressed ? 1 : 0;
+                        }
+                        if (e.onCommandLine !== null) {
+                            v.c = e.onCommandLine ? 1 : 0;
+                        }
+                        if (e.causeBug !== null) {
+                            v.b = e.causeBug ? 1 : 0;
+                        }
+                        return v;
+                    }),
+                });
+            }
+
+            function stateFromString(hash) {
+                const obj = JSON.parse(hash);
+                return {
+                    selected: obj.s.map((v) => {
+                        return {
+                            id: v.i,
+                            variant: v.j,
+                            compressed: "z" in v ? !!v.z : null,
+                            onCommandLine: "c" in v ? !!v.c : null,
+                            causeBug: "b" in v ? !!v.b : null,
+                        };
+                    }),
+                };
+            }
+
+            function parseHash() {
+                const raw = window.location.hash.slice(1);
+                if (raw.length > 0) {
+                    try {
+                        state = stateFromString(
+                            unescape(window.location.hash.slice(1))
+                        );
+                    } catch (e) {
+                        state = makeCleanState();
+                        console.error(e);
+                    }
+                }
+                rerenderSelections();
+            }
+            parseHash();
+            window.onhashchange = function () {
+                parseHash();
+                start();
+            };
+
+            function clearResults() {
+                while (results.hasChildNodes()) {
+                    results.removeChild(results.firstChild);
+                }
+            }
+
+            function nodeToPngBlob(node, width, height) {
+                return new Promise((resolve) => {
+                    const img = document.createElement("img");
+                    const xmlSerializer = new XMLSerializer();
+                    img.src = `data:image/svg+xml;utf8,
+                        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+                            <foreignObject width="100%" height="100%">
+                                ${xmlSerializer.serializeToString(node)}
+                            </foreignObject>
+                        </svg>
+                    `;
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        canvas
+                            .getContext("2d")
+                            .drawImage(
+                                img,
+                                0,
+                                0,
+                                canvas.width,
+                                canvas.height,
+                                0,
+                                0,
+                                canvas.width,
+                                canvas.height
+                            );
+
+                        canvas.toBlob((blob) => {
+                            resolve(blob);
+                        });
+                    };
+                });
+            }
+
+            function downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function rerenderSelections() {
+                while (selectedTable.hasChildNodes()) {
+                    selectedTable.removeChild(selectedTable.firstChild);
+                }
+
+                for (let i = 0; i < state.selected.length; ++i) {
+                    const tr = document.createElement("tr");
+                    selectedTable.appendChild(tr);
+
+                    const td = document.createElement("td");
+                    tr.appendChild(td);
+
+                    const blockTitle = document.createElement("div");
+                    td.appendChild(blockTitle);
+
+                    blockTitle.className = "mb-2";
+
+                    const blockName = document.createElement("strong");
+                    blockTitle.appendChild(blockName);
+
+                    const req = state.selected[i];
+                    const block = BLOCKS[req.id];
+
+                    blockName.appendChild(
+                        makeLangSpans({
+                            en:
+                                block.name.en +
+                                " (" +
+                                NAVICUST_COLORS[block.colors[req.variant]].name
+                                    .en +
+                                ")",
+                            ja:
+                                block.name.ja +
+                                "（" +
+                                NAVICUST_COLORS[block.colors[req.variant]].name
+                                    .ja +
+                                "）",
+                        })
+                    );
+
+                    const deleteButton = document.createElement("button");
+                    blockTitle.appendChild(deleteButton);
+                    deleteButton.className = "btn-close float-end";
+                    deleteButton.type = "button";
+                    deleteButton.setAttribute("aria-label", "Delete");
+
+                    deleteButton.onclick = function (i) {
+                        state.selected.splice(i, 1);
+                        rerenderSelections();
+                        start();
+                    }.bind(this, i);
+
+                    const blockSettings = document.createElement("div");
+                    blockSettings.className = "row align-items-center";
+                    td.appendChild(blockSettings);
+
+                    blockSettings.appendChild(
+                        makeBlockSetting(
+                            {
+                                en: "go on command line",
+                                ja: "コマンドラインに配置",
+                            },
+                            state.selected[i].onCommandLine,
+                            false,
+                            function (i, checked) {
+                                state.selected[i].onCommandLine = checked;
+                                rerenderSelections();
+                                start();
+                            }.bind(this, i)
+                        )
+                    );
+                    blockSettings.appendChild(
+                        makeBlockSetting(
+                            { en: "cause bug", ja: "バグを発生" },
+                            state.selected[i].causeBug,
+                            false,
+                            function (i, checked) {
+                                state.selected[i].causeBug = checked;
+                                rerenderSelections();
+                                start();
+                            }.bind(this, i)
+                        )
+                    );
+                    const hasCompressed = BLOCKS[
+                        state.selected[i].id
+                    ].squares.some((l) => l == 2);
+                    blockSettings.appendChild(
+                        makeBlockSetting(
+                            { en: "compress", ja: "圧縮" },
+                            hasCompressed
+                                ? state.selected[i].compressed
+                                : false,
+                            !hasCompressed,
+                            function (i, checked) {
+                                state.selected[i].compressed = checked;
+                                rerenderSelections();
+                                start();
+                            }.bind(this, i)
+                        )
+                    );
+                }
+
+                form.elements.blocksEn.disabled =
+                    form.elements.blocksJa.disabled =
+                        state.selected.length >= 25;
+
+                if (window.location.hash == "") {
+                    history.replaceState(
+                        undefined,
+                        undefined,
+                        "#" + stateToString(state)
+                    );
+                } else {
+                    history.pushState(
+                        undefined,
+                        undefined,
+                        "#" + stateToString(state)
+                    );
+                }
+            }
+
+            form.elements.blocksEn.onchange = form.elements.blocksJa.onchange =
+                function () {
+                    const { id, variant } = JSON.parse(this.value);
+                    state.selected.push({
+                        id,
+                        variant,
+                        compressed: true,
+                        onCommandLine: BLOCKS[id].isSolid ? true : null,
+                        causeBug: null,
+                    });
+                    this.value = -1;
+                    rerenderSelections();
+                    start();
+                };
+
+            const blockOptions = [];
+
+            for (let i = 0; i < BLOCKS.length; ++i) {
+                const block = BLOCKS[i];
+                if (block == null) {
+                    continue;
+                }
+                for (let j = 0; j < block.colors.length; ++j) {
+                    blockOptions.push({
+                        titleEn: `${block.name.en} (${
+                            NAVICUST_COLORS[block.colors[j]].name.en
+                        })`,
+                        titleJa: `${block.name.ja} (${
+                            NAVICUST_COLORS[block.colors[j]].name.ja
+                        })`,
+                        value: JSON.stringify({ id: i, variant: j }),
+                    });
+                }
+            }
+
+            blockOptions.sort((a, b) =>
+                a.titleEn < b.titleEn ? -1 : a.titleEn > b.titleEn ? 1 : 0
+            );
+            for (const opt of blockOptions) {
+                const option = document.createElement("option");
+                form.elements.blocksEn.appendChild(option);
+                option.value = opt.value;
+                option.textContent = opt.titleEn;
+            }
+
+            blockOptions.sort((a, b) =>
+                a.titleJa < b.titleJa ? -1 : a.titleJa > b.titleJa ? 1 : 0
+            );
+            for (const opt of blockOptions) {
+                const option = document.createElement("option");
+                form.elements.blocksJa.appendChild(option);
+                option.value = opt.value;
+                option.textContent = opt.titleJa;
+            }
+
+            function render(reqs, packing, reqStatus) {
+                const view = document.createElement("div");
+                view.className = "d-flex flex-wrap mb-3";
+
+                const tableContainer = document.createElement("div");
+                view.appendChild(tableContainer);
+
+                const rendered = renderNavicust(
+                    packing,
+                    reqs.map((req) => ({
+                        color: req.color,
+                        isSolid: BLOCKS[req.id].isSolid,
+                    })),
+                    solverOptions
+                );
+                tableContainer.appendChild(rendered);
+
+                const listContainer = document.createElement("div");
+                view.appendChild(listContainer);
+                listContainer.className = "p-1";
+
+                const buttonsRow = document.createElement("div");
+                buttonsRow.className = "mb-2";
+                listContainer.appendChild(buttonsRow);
+
+                if (typeof ClipboardItem !== "undefined") {
+                    const copyButton = document.createElement("button");
+                    buttonsRow.appendChild(copyButton);
+
+                    let copyHintTimeout;
+                    copyButton.className = "btn btn-sm btn-secondary";
+                    copyButton.appendChild(
+                        makeLangSpans({ en: "copy image", ja: "画像をコピー" })
+                    );
+                    copyButton.onclick = () => {
+                        nodeToPngBlob(
+                            clearNavicustNumbers(rendered),
+                            rendered.offsetWidth,
+                            rendered.offsetHeight
+                        ).then((blob) => {
+                            navigator.clipboard
+                                .write([
+                                    new ClipboardItem({
+                                        "image/png": blob,
+                                    }),
+                                ])
+                                .then(() => {
+                                    clearTimeout(copyHintTimeout);
+                                    copyButton.style.width =
+                                        copyButton.offsetWidth + "px";
+                                    copyButton.textContent = "";
+                                    copyButton.appendChild(
+                                        makeLangSpans({
+                                            en: "copied!",
+                                            ja: "コピーされた！",
+                                        })
+                                    );
+                                    copyHintTimeout = setTimeout(() => {
+                                        copyButton.textContent = "";
+                                        copyButton.appendChild(
+                                            makeLangSpans({
+                                                en: "copy image",
+                                                ja: "画像をコピー",
+                                            })
+                                        );
+                                        copyButton.style.width = null;
+                                    }, 1000);
+                                });
+                        });
+                    };
+                    buttonsRow.appendChild(document.createTextNode(" "));
+                }
+
+                const downloadButton = document.createElement("button");
+                buttonsRow.appendChild(downloadButton);
+                downloadButton.className = "btn btn-sm btn-secondary";
+                downloadButton.type = "button";
+                downloadButton.appendChild(
+                    makeLangSpans({
+                        en: "download image",
+                        ja: "画像をダウンロード",
+                    })
+                );
+                downloadButton.onclick = () => {
+                    nodeToPngBlob(
+                        clearNavicustNumbers(rendered),
+                        rendered.offsetWidth,
+                        rendered.offsetHeight
+                    ).then((blob) => {
+                        downloadBlob(blob, "fullcust-navicust.png");
+                    });
+                };
+
+                const commandLineBlocks = new Set(
+                    array2d.row(packing, solverOptions.commandLine)
+                );
+                commandLineBlocks.delete(-1);
+
+                const list = document.createElement("ol");
+                listContainer.appendChild(list);
+                for (let i = 0; i < reqs.length; ++i) {
+                    const req = reqs[i];
+                    const li = document.createElement("li");
+                    list.appendChild(li);
+
+                    const block = BLOCKS[req.id];
+                    const isFunctional =
+                        !block.isSolid || commandLineBlocks.has(i);
+
+                    let textEn =
+                        block.name.en +
+                        " (" +
+                        NAVICUST_COLORS[block.colors[req.variant]].name.en +
+                        ")";
+                    let textJa =
+                        block.name.ja +
+                        "（" +
+                        NAVICUST_COLORS[block.colors[req.variant]].name.ja +
+                        "）";
+
+                    if (!reqStatus[i].compressed) {
+                        textEn += " (uncompressed)";
+                        textJa += "（非圧縮）";
+                    }
+
+                    const spans = makeLangSpans({ en: textEn, ja: textJa });
+
+                    if (isFunctional) {
+                        li.appendChild(spans);
+                    } else {
+                        const del = document.createElement("del");
+                        li.appendChild(del);
+                        del.appendChild(spans);
+                    }
+                }
+
+                const layout = reqs.map((req, i) => ({
+                    id: req.id,
+                    variant: req.variant,
+                    ...reqStatus[i],
+                }));
+
+                console.log(
+                    "zsaver-compatible layout string",
+                    JSON.stringify(layout)
+                );
+
+                return view;
+            }
+
+            if (state.selected.length > 0) {
+                start();
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,77 @@
+img {
+    image-rendering: pixelated;
+}
+
+.table td.fit,
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
+html {
+    scroll-behavior: auto !important;
+}
+
+@keyframes blink {
+    0% {
+        background-color: #ffc107;
+    }
+    100% {
+        background-color: var(--bg-color);
+    }
+}
+
+.chip:target {
+    animation-name: blink;
+    animation-direction: normal;
+    animation-duration: 0.3s;
+    animation-iteration-count: 2;
+    animation-timing-function: ease;
+}
+
+.pa-info {
+    position: relative;
+}
+
+.pa-select {
+    position: absolute;
+    top: 0;
+    margin-left: calc(var(--bs-gutter-x) * 0.5);
+    margin-right: calc(var(--bs-gutter-x) * 0.5);
+}
+
+.pa-select:not(:checked) + ul {
+    display: none;
+}
+
+.chip {
+    background-color: var(--bg-color);
+}
+
+.chip-name {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+[lang="ja"] .chip-name {
+    transform-origin: left center;
+    transform: scaleX(0.85);
+    margin-right: -15%;
+}
+
+.chip-class-standard {
+    /* background-color: #dedeef; */
+    --bg-color: transparent;
+}
+
+.chip-class-mega {
+    --bg-color: #adefef;
+}
+
+.chip-class-giga {
+    --bg-color: #f7cee7;
+}
+
+.chip-class-dark {
+    --bg-color: #b58cd6;
+}
