@@ -6,6 +6,7 @@ cp -r index.html fullcust common zsaver public
 
 chiplibrary_output_dir="$(pwd)/public/chiplibrary"
 pushd chiplibrary || exit 1
+pip3 install -r requirements.txt
 CHIPLIBRARY_OUTPUT_DIR="${chiplibrary_output_dir}" ./generate.py
 popd || exit 1
 
