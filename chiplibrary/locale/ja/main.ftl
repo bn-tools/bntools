@@ -1,7 +1,7 @@
 home-description = ロックマンエグゼチップ情報
 home-different-language = chiplibrary is also available in <a href="{$base_url}/index.en.html">english</a>!
 home-game-entry = <a href="{$url}">{$game_name}</a>（<a href="{$by_code_url}">コード順</a>、<a href="{$by_element_url}">系統順</a>）
-home-bugtracker-info = 情報が正しくない場合は、<a href="https://gitlab.com/bntools/chiplibrary/issues" target="_blank">こちらでご報告ください</a>。
+home-bugtracker-info = 情報が正しくない場合は、<a href="https://github.com/murkland/bntools/issues" target="_blank">こちらでご報告ください</a>。
 home-credits-title = クレジット
 home-credits-body =
     <ul>

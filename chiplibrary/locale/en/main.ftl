@@ -1,7 +1,7 @@
 home-description = look up chips for mega man battle network
 home-different-language = chiplibraryは<a href="{$base_url}/index.ja.html">日本語</a>でも利用できます。
 home-game-entry = <a href="{$url}">{$game_name}</a> (<a href="{$by_code_url}">by code</a>, <a href="{$by_element_url}">by element</a>)
-home-bugtracker-info = found incorrect info? <a href="https://gitlab.com/bntools/chiplibrary/issues" target="_blank">let me know!</a>
+home-bugtracker-info = found incorrect info? <a href="https://github.com/murkland/bntools/issues" target="_blank">let me know!</a>
 home-credits-title = credits
 home-credits-body =
     <ul>
