@@ -4209,7 +4209,7 @@
             "en": "Rush fwd!\nOpen panl\nhit TrCar",
             "ja": "前方へとっしん！\n後ろがあきマスだと\nかもつがついてくる"
         },
-        "element": "fire",
+        "element": "null",
         "codes": "C*",
         "mb": 42,
         "version": "gregar",
@@ -4228,7 +4228,7 @@
             "en": "Rush fwd!\nOpen panl\nhit TrCar",
             "ja": "前方へとっしん！\n後ろがあきマスだと\nかもつがついてくる"
         },
-        "element": "fire",
+        "element": "null",
         "codes": "C",
         "mb": 63,
         "version": "gregar",
@@ -4247,7 +4247,7 @@
             "en": "Rush fwd!\nOpen panl\nhit TrCar",
             "ja": "前方へとっしん！\n後ろがあきマスだと\nかもつがついてくる"
         },
-        "element": "fire",
+        "element": "null",
         "codes": "C",
         "mb": 81,
         "version": "gregar",
