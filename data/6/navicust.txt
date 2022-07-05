@@ -147,9 +147,9 @@ Collect/コレクターズアイ pink solid
 
 Millions/ミリオネア red solid
 .....
-..##.
-...#.
-..XX.
+.##..
+..#..
+.XX..
 .....
 
 Humor/ユーモアセンス pink solid
