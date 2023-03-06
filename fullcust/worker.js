@@ -1,6 +1,6 @@
 const now = +new Date();
 
-importScripts("/common/array2d.js?" + now, "solver.js?" + now);
+importScripts("../common/array2d.js?" + now, "solver.js?" + now);
 
 let solver = null;
 
