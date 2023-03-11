@@ -6,7 +6,7 @@ import json
 from mako.lookup import TemplateLookup
 from fluent.runtime import FluentLocalization, FluentResourceLoader
 
-BASE_URL = os.environ.get("CHIPLIBRARY_BASE_URL", "/chiplibrary")
+BASE_URL = os.environ.get("CHIPLIBRARY_BASE_URL", "/bntools/chiplibrary")
 OUTPUT_DIR = os.environ.get("CHIPLIBRARY_OUTPUT_DIR", "public")
 
 
