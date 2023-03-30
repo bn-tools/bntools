@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>bntools/chiplibrary</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+            crossorigin="anonymous"
+        />
+        <link href="/bntools/chiplibrary/style.css" rel="stylesheet" />
+        <style id="lang-style">
+        [lang]:not([data-lang-ignore]) {
+            display: none;
+        }
+        </style>
+    </head>
+    <body>
+        <ul id="lang-selector" class="nav nav-pills border-start border-top position-fixed bottom-0 end-0 bg-body rounded p-1" style="z-index:1030">
+            <li class="nav-item">
+                <a href="?en" class="nav-link" data-lang-ignore lang="en" onclick="setLanguage('en'); return false">
+                    en
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="?ja" class="nav-link" data-lang-ignore lang="ja" onclick="setLanguage('ja'); return false">
+                    日本語
+                </a>
+            </li>
+        </ul>
+        <script>
+        const LANGUAGES = [
+            "en",
+            "ja",
+        ];
+
+        function setLanguage(lang) {
+            document.getElementById("lang-style").textContent = "[lang]:not([lang=" + lang + "]):not([data-lang-ignore]) { display: none; }";
+            document.documentElement.lang = lang;
+            window.localStorage.setItem("chiplibrary/lang", lang);
+            const navItems = document.getElementById('lang-selector').querySelectorAll('.nav-link');
+            for (let i = 0; i < navItems.length; ++i) {
+                navItems[i].classList.remove('active');
+                if (navItems[i].lang == lang) {
+                    navItems[i].classList.add('active');
+                }
+            }
+        }
+
+        setLanguage((() => {
+            let currentLanguage = null;
+
+            // 1. Check querystring language.
+            if (!currentLanguage) {
+                currentLanguage = window.location.search.substring(1);
+            }
+
+            // 2. Check remembered language.
+            if (!currentLanguage) {
+                currentLanguage = window.localStorage.getItem("chiplibrary/lang");
+            }
+
+            // 3. Check navigator language.
+            if (!currentLanguage) {
+                currentLanguage = navigator.language.split(/-/)[0];
+            }
+
+            currentLanguage = currentLanguage || LANGUAGES[0];
+            if (LANGUAGES.indexOf(currentLanguage) == -1) {
+                currentLanguage = LANGUAGES[0];
+            }
+            return currentLanguage;
+        })());
+        </script>
+        <div class="pb-5">
+            
+
+
+<div class="container my-3">
+    <h1><a href="/">bntools</a>/chiplibrary</h1>
+    <p class="lead">
+        <span lang="en">look up chips for mega man battle network</span>
+        <span lang="ja">ロックマンエグゼチップ情報</span>
+    </p>
+    <ul>
+        <li>
+            <span lang="en"><a href="/bntools/chiplibrary/1/">Mega Man Battle Network 1</a> (<a href="/bntools/chiplibrary/1/by-code/">by code</a>, <a href="/bntools/chiplibrary/1/by-element/">by element</a>)</span>
+            <span lang="ja"><a href="/bntools/chiplibrary/1/">ロックマンエグゼ1</a>（<a href="/bntools/chiplibrary/1/by-code/">コード順</a>、<a href="/bntools/chiplibrary/1/by-element/">系統順</a>）</span>
+        </li>
+        <li>
+            <span lang="en"><a href="/bntools/chiplibrary/2/">Mega Man Battle Network 2</a> (<a href="/bntools/chiplibrary/2/by-code/">by code</a>, <a href="/bntools/chiplibrary/2/by-element/">by element</a>)</span>
+            <span lang="ja"><a href="/bntools/chiplibrary/2/">ロックマンエグゼ2</a>（<a href="/bntools/chiplibrary/2/by-code/">コード順</a>、<a href="/bntools/chiplibrary/2/by-element/">系統順</a>）</span>
+        </li>
+        <li>
+            <span lang="en"><a href="/bntools/chiplibrary/3/">Mega Man Battle Network 3</a> (<a href="/bntools/chiplibrary/3/by-code/">by code</a>, <a href="/bntools/chiplibrary/3/by-element/">by element</a>)</span>
+            <span lang="ja"><a href="/bntools/chiplibrary/3/">ロックマンエグゼ3</a>（<a href="/bntools/chiplibrary/3/by-code/">コード順</a>、<a href="/bntools/chiplibrary/3/by-element/">系統順</a>）</span>
+        </li>
+        <li>
+            <span lang="en"><a href="/bntools/chiplibrary/4/">Mega Man Battle Network 4</a> (<a href="/bntools/chiplibrary/4/by-code/">by code</a>, <a href="/bntools/chiplibrary/4/by-element/">by element</a>)</span>
+            <span lang="ja"><a href="/bntools/chiplibrary/4/">ロックマンエグゼ4</a>（<a href="/bntools/chiplibrary/4/by-code/">コード順</a>、<a href="/bntools/chiplibrary/4/by-element/">系統順</a>）</span>
+        </li>
+        <li>
+            <span lang="en"><a href="/bntools/chiplibrary/5/">Mega Man Battle Network 5</a> (<a href="/bntools/chiplibrary/5/by-code/">by code</a>, <a href="/bntools/chiplibrary/5/by-element/">by element</a>)</span>
+            <span lang="ja"><a href="/bntools/chiplibrary/5/">ロックマンエグゼ5</a>（<a href="/bntools/chiplibrary/5/by-code/">コード順</a>、<a href="/bntools/chiplibrary/5/by-element/">系統順</a>）</span>
+        </li>
+        <li>
+            <span lang="en"><a href="/bntools/chiplibrary/6/">Mega Man Battle Network 6</a> (<a href="/bntools/chiplibrary/6/by-code/">by code</a>, <a href="/bntools/chiplibrary/6/by-element/">by element</a>)</span>
+            <span lang="ja"><a href="/bntools/chiplibrary/6/">ロックマンエグゼ6</a>（<a href="/bntools/chiplibrary/6/by-code/">コード順</a>、<a href="/bntools/chiplibrary/6/by-element/">系統順</a>）</span>
+        </li>
+    </ul>
+    <p>
+        <span lang="en">found incorrect info? <a href="https://github.com/murkland/bntools/issues" target="_blank">let me know!</a></span>
+        <span lang="ja">情報が正しくない場合は、<a href="https://github.com/murkland/bntools/issues" target="_blank">こちらでご報告ください</a>。</span>
+    </p>
+    <h2>
+        <span lang="en">credits</span>
+        <span lang="ja">クレジット</span>
+    </h2>
+    <p>
+        <div lang="en"><ul>
+    <li><a href="https://github.com/chrisrsantiago/chiplibrary-data" target="_blank">github.com/chrisrsantiago/chiplibrary-data</a>: most of the original data</li>
+    <li><a href="https://github.com/Prof9/TextPet" target="_blank">github.com/Prof9/TextPet</a>: text extraction tool for the games</li>
+    <li><a href="https://www.sprites-inc.co.uk" target="_blank">sprites-inc.co.uk</a>: mmbn1 chip icons</li>
+    <li><a href="https://megaman.fandom.com" target="_blank">megaman.fandom.com</a>: miscellanous</li>
+</ul></div>
+        <div lang="ja"><ul>
+    <li><a href="https://github.com/chrisrsantiago/chiplibrary-data" target="_blank">github.com/chrisrsantiago/chiplibrary-data</a>：元情報の大半</li>
+    <li><a href="https://github.com/Prof9/TextPet" target="_blank">github.com/Prof9/TextPet</a>：ゲーム用テキスト抽出ツール</li>
+    <li><a href="https://www.sprites-inc.co.uk" target="_blank">sprites-inc.co.uk</a>：EXE1チップアイコン</li>
+    <li><a href="https://megaman.fandom.com" target="_blank">megaman.fandom.com</a>：雑多な情報</li>
+</ul></div>
+    </p>
+</div>
+
+        </div>
+    </body>
+</html>
